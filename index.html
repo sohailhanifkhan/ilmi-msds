@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MSDS Library</title>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #eef2f7;
+}
+
+.header {
+    background: #2a5298;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.header h2 {
+    margin: 5px;
+}
+
+.header p {
+    margin: 0;
+}
+
+/* LEGEND */
+.legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: white;
+    padding: 10px;
+}
+
+.legend span {
+    margin: 5px 10px;
+    font-size: 14px;
+}
+
+/* SEARCH */
+.search {
+    text-align: center;
+    margin: 10px;
+}
+
+.search input {
+    width: 90%;
+    max-width: 500px;
+    padding: 10px;
+}
+
+/* GRID */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    padding: 15px;
+}
+
+/* CARD */
+.card {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    border-left: 8px solid #3498db;
+}
+
+/* ICON ROW */
+.icon-row {
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #2a5298;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="header">
+    <h2>MSDS Library</h2>
+    <p>Click to Access Safety Data Sheets</p>
+</div>
+
+<!-- ✅ CLEAN LEGEND -->
+<div class="legend">
+    <span>🔥 Flammable</span>
+    <span>🧯 Gas</span>
+    <span>☣️ Health</span>
+    <span>🌍 Environment</span>
+    <span>⚠️ Oxidizer</span>
+    <span>🧪 Corrosive</span>
+</div>
+
+<div class="search">
+    <input type="text" id="search" placeholder="Search..." onkeyup="filterData()">
+</div>
+
+<div class="container" id="list"></div>
+
+<script>
+
+// ✅ ✅ IMPORTANT: PASTE YOUR CSV LINK HERE
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSSksGapM9TAjh1gbpm6JxtidPcA9XD2gwT40anhDJCfSys4xqlNKTAZIBnuxVBzgpNZWyvMvhAWjrA/pub?gid=0&single=true&output=csv";
+
+let dataList = [];
+
+// ✅ ICON MAP (EMOJI – stable in all browsers)
+const icons = {
+    "flammable": "🔥",
+    "gas": "🧯",
+    "pressure": "🧯",
+    "health": "☣️",
+    "environment": "🌍",
+    "oxidizer": "⚠️",
+    "oxidizing": "⚠️",
+    "corrosive": "🧪"
+};
+
+// ✅ COLOR PRIORITY
+function getColor(h) {
+    h = h.toLowerCase();
+    if (h.includes("flammable")) return "#e74c3c";
+    if (h.includes("oxidizer")) return "#f39c12";
+    if (h.includes("corrosive")) return "#8e44ad";
+    return "#3498db";
+}
+
+// ✅ ✅ SAFE CSV LOADING
+fetch(sheetURL)
+.then(response => {
+    if (!response.ok) throw new Error("CSV not accessible");
+    return response.text();
+})
+.then(csv => {
+
+    let rows = csv.split("\n");
+
+    for (let i = 1; i < rows.length; i++) {
+
+        let row = rows[i].trim();
+        if (!row) continue;
+
+        let cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+        if (!cols || cols.length < 2) continue;
+
+        let name = cols[0].replace(/"/g, "").trim();
+        let url = cols[1].replace(/"/g, "").trim();
+        let hazards = cols[2] ? cols[2].replace(/"/g, "").trim() : "";
+
+        if (url.includes("drive.google.com")) {
+            url = url.replace("/view", "/preview");
+        }
+
+        dataList.push({ name, url, hazards });
+    }
+
+    display(dataList);
+})
+.catch(err => {
+    alert("❌ ERROR: Check your Google Sheet CSV link");
+    console.error(err);
+});
+
+// ✅ DISPLAY
+function display(list) {
+
+    let container = document.getElementById("list");
+    container.innerHTML = "";
+
+    list.forEach(item => {
+
+        let card = document.createElement("div");
+        card.className = "card";
+        card.style.borderLeftColor = getColor(item.hazards);
+
+        let iconHTML = "";
+
+        item.hazards.toLowerCase().split(",").forEach(h => {
+            let text = h.trim();
+
+            Object.keys(icons).forEach(key => {
+                if (text.includes(key)) {
+                    iconHTML += icons[key] + " ";
+                }
+            });
+        });
+
+        let btn = document.createElement("button");
+        btn.innerHTML = `<div class="icon-row">${iconHTML}</div>${item.name}`;
+
+        btn.onclick = () => {
+            if (item.url) window.open(item.url, "_blank");
+            else alert("MSDS not available");
+        };
+
+        card.appendChild(btn);
+        container.appendChild(card);
+    });
+}
+
+// ✅ SEARCH
+function filterData() {
+    let txt = document.getElementById("search").value.toLowerCase();
+
+    let filtered = dataList.filter(item =>
+        item.name.toLowerCase().includes(txt)
+    );
+
+    display(filtered);
+}
+
+</script>
+
+</body>
+</html>
