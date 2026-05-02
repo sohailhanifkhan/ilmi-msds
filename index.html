@@ -20,14 +20,6 @@ body {
     padding: 20px;
 }
 
-.header h2 {
-    margin: 5px;
-}
-
-.header p {
-    margin: 0;
-}
-
 /* LEGEND */
 .legend {
     display: flex;
@@ -72,8 +64,8 @@ body {
 
 /* ICON ROW */
 .icon-row {
-    margin-bottom: 5px;
     font-size: 18px;
+    margin-bottom: 5px;
 }
 
 /* BUTTON */
@@ -85,7 +77,6 @@ button {
     background: #2a5298;
     color: white;
     cursor: pointer;
-    font-size: 13px;
 }
 </style>
 
@@ -97,7 +88,6 @@ button {
     <p>Click to Access Safety Data Sheets</p>
 </div>
 
-<!-- ✅ CLEAN LEGEND -->
 <div class="legend">
     <span>🔥 Flammable</span>
     <span>🧯 Gas</span>
@@ -115,12 +105,16 @@ button {
 
 <script>
 
-// ✅ ✅ IMPORTANT: PASTE YOUR CSV LINK HERE
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSSksGapM9TAjh1gbpm6JxtidPcA9XD2gwT40anhDJCfSys4xqlNKTAZIBnuxVBzgpNZWyvMvhAWjrA/pub?gid=0&single=true&output=csv";
+// ✅ PUT YOUR CSV LINK HERE
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSSksGapM9TAjh1gbpm6JxtidPcA9XD2gwT40anhDJCfSys4xqlNKTAZIBnuxVBzgpNZWyvMvhAWjrA/pub?output=csv";
 
 let dataList = [];
 
-// ✅ ICON MAP (EMOJI – stable in all browsers)
+// ✅ GET ID FROM QR
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+// ✅ ICON MAP
 const icons = {
     "flammable": "🔥",
     "gas": "🧯",
@@ -132,7 +126,7 @@ const icons = {
     "corrosive": "🧪"
 };
 
-// ✅ COLOR PRIORITY
+// ✅ COLOR
 function getColor(h) {
     h = h.toLowerCase();
     if (h.includes("flammable")) return "#e74c3c";
@@ -141,12 +135,9 @@ function getColor(h) {
     return "#3498db";
 }
 
-// ✅ ✅ SAFE CSV LOADING
+// ✅ LOAD DATA
 fetch(sheetURL)
-.then(response => {
-    if (!response.ok) throw new Error("CSV not accessible");
-    return response.text();
-})
+.then(res => res.text())
 .then(csv => {
 
     let rows = csv.split("\n");
@@ -167,14 +158,20 @@ fetch(sheetURL)
             url = url.replace("/view", "/preview");
         }
 
-        dataList.push({ name, url, hazards });
+        dataList.push({ name, url, hazards, row: i+1 });
     }
 
-    display(dataList);
-})
-.catch(err => {
-    alert("❌ ERROR: Check your Google Sheet CSV link");
-    console.error(err);
+    // ✅ QR MODE (SHOW ONLY ONE)
+    if (id) {
+        let item = dataList.find(x => x.row == id);
+
+        if (item) {
+            display([item]);
+        }
+    } else {
+        display(dataList);
+    }
+
 });
 
 // ✅ DISPLAY
@@ -216,6 +213,7 @@ function display(list) {
 
 // ✅ SEARCH
 function filterData() {
+
     let txt = document.getElementById("search").value.toLowerCase();
 
     let filtered = dataList.filter(item =>
@@ -224,13 +222,7 @@ function filterData() {
 
     display(filtered);
 }
-// ✅ AUTO SEARCH FROM QR
-const params = new URLSearchParams(window.location.search);
-const searchParam = params.get("search");
 
-if (searchParam) {
-    document.getElementById("search").value = searchParam;
-}
 </script>
 
 </body>
