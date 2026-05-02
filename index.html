@@ -224,7 +224,13 @@ function filterData() {
 
     display(filtered);
 }
+// ✅ AUTO SEARCH FROM QR
+const params = new URLSearchParams(window.location.search);
+const searchParam = params.get("search");
 
+if (searchParam) {
+    document.getElementById("search").value = searchParam;
+}
 </script>
 
 </body>
