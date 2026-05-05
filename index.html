@@ -34,7 +34,13 @@ body {
     font-size: 14px;
 }
 
-/* ✅ NEW ICON STYLE */
+.legend img {
+    width: 22px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* ICON STYLE */
 .ghs-icon {
     width: 22px;
     height: 22px;
@@ -95,14 +101,14 @@ button {
     <p>Click to Access Safety Data Sheets</p>
 </div>
 
-<!-- ✅ UPDATED LEGEND -->
+<!-- ✅ FIXED LEGEND -->
 <div class="legend">
-    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/7/73/GHS-pictogram-flamme.svg"> Flammable</span>
-    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/3/3b/GHS-pictogram-gas.svg"> Gas</span>
-    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/9/99/GHS-pictogram-silhouette.svg"> Health</span>
-    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/0a/GHS-pictogram-pollu.svg"> Environment</span>
-    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/7/7d/GHS-pictogram-oxid.svg"> Oxidizer</span>
-    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/a/a1/GHS-pictogram-acid.svg"> Corrosive</span>
+    <span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/GHS-pictogram-flamme.svg/120px-GHS-pictogram-flamme.svg.png"> Flammable</span>
+    <span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/GHS-pictogram-gas.svg/120px-GHS-pictogram-gas.svg.png"> Gas</span>
+    <span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/GHS-pictogram-silhouette.svg/120px-GHS-pictogram-silhouette.svg.png"> Health</span>
+    <span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/GHS-pictogram-pollu.svg/120px-GHS-pictogram-pollu.svg.png"> Environment</span>
+    <span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/GHS-pictogram-oxid.svg/120px-GHS-pictogram-oxid.svg.png"> Oxidizer</span>
+    <span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/GHS-pictogram-acid.svg/120px-GHS-pictogram-acid.svg.png"> Corrosive</span>
 </div>
 
 <div class="search">
@@ -113,28 +119,25 @@ button {
 
 <script>
 
-// ✅ PUT YOUR CSV LINK HERE
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSSksGapM9TAjh1gbpm6JxtidPcA9XD2gwT40anhDJCfSys4xqlNKTAZIBnuxVBzgpNZWyvMvhAWjrA/pub?output=csv";
 
 let dataList = [];
 
-// ✅ GET ID FROM QR
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-// ✅ ✅ UPDATED ICON MAP (GHS IMAGES)
+// ✅ PNG ICON MAP (SAFE FIX)
 const icons = {
-    "flammable": "https://upload.wikimedia.org/wikipedia/commons/7/73/GHS-pictogram-flamme.svg",
-    "gas": "https://upload.wikimedia.org/wikipedia/commons/3/3b/GHS-pictogram-gas.svg",
-    "pressure": "https://upload.wikimedia.org/wikipedia/commons/3/3b/GHS-pictogram-gas.svg",
-    "health": "https://upload.wikimedia.org/wikipedia/commons/9/99/GHS-pictogram-silhouette.svg",
-    "environment": "https://upload.wikimedia.org/wikipedia/commons/0/0a/GHS-pictogram-pollu.svg",
-    "oxidizer": "https://upload.wikimedia.org/wikipedia/commons/7/7d/GHS-pictogram-oxid.svg",
-    "oxidizing": "https://upload.wikimedia.org/wikipedia/commons/7/7d/GHS-pictogram-oxid.svg",
-    "corrosive": "https://upload.wikimedia.org/wikipedia/commons/a/a1/GHS-pictogram-acid.svg"
+    "flammable": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/GHS-pictogram-flamme.svg/120px-GHS-pictogram-flamme.svg.png",
+    "gas": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/GHS-pictogram-gas.svg/120px-GHS-pictogram-gas.svg.png",
+    "pressure": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/GHS-pictogram-gas.svg/120px-GHS-pictogram-gas.svg.png",
+    "health": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/GHS-pictogram-silhouette.svg/120px-GHS-pictogram-silhouette.svg.png",
+    "environment": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/GHS-pictogram-pollu.svg/120px-GHS-pictogram-pollu.svg.png",
+    "oxidizer": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/GHS-pictogram-oxid.svg/120px-GHS-pictogram-oxid.svg.png",
+    "oxidizing": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/GHS-pictogram-oxid.svg/120px-GHS-pictogram-oxid.svg.png",
+    "corrosive": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/GHS-pictogram-acid.svg/120px-GHS-pictogram-acid.svg.png"
 };
 
-// ✅ COLOR
 function getColor(h) {
     h = h.toLowerCase();
     if (h.includes("flammable")) return "#e74c3c";
@@ -143,7 +146,6 @@ function getColor(h) {
     return "#3498db";
 }
 
-// ✅ LOAD DATA
 fetch(sheetURL)
 .then(res => res.text())
 .then(csv => {
@@ -178,7 +180,6 @@ fetch(sheetURL)
 
 });
 
-// ✅ DISPLAY
 function display(list) {
 
     let container = document.getElementById("list");
@@ -197,7 +198,10 @@ function display(list) {
 
             Object.keys(icons).forEach(key => {
                 if (text.includes(key)) {
-                    iconHTML += `<img src="${icons[key]}" class="ghs-icon" title="${text        if (item.url) window.open(item.url, "_blank");
+                    iconHTML += `<img src="${icons[key]}" class="ghs-icon" title="${btn.innerHTML = `<div class="icon-row">${iconHTML}</div>${item.name}`;
+
+        btn.onclick = () => {
+            if (item.url) window.open(item.url, "_blank");
             else alert("MSDS not available");
         };
 
@@ -206,7 +210,6 @@ function display(list) {
     });
 }
 
-// ✅ SEARCH
 function filterData() {
 
     let txt = document.getElementById("search").value.toLowerCase();
@@ -222,3 +225,4 @@ function filterData() {
 
 </body>
 </html>
+``
