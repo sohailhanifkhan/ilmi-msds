@@ -34,6 +34,14 @@ body {
     font-size: 14px;
 }
 
+/* ✅ NEW ICON STYLE */
+.ghs-icon {
+    width: 22px;
+    height: 22px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
 /* SEARCH */
 .search {
     text-align: center;
@@ -64,7 +72,6 @@ body {
 
 /* ICON ROW */
 .icon-row {
-    font-size: 18px;
     margin-bottom: 5px;
 }
 
@@ -88,13 +95,14 @@ button {
     <p>Click to Access Safety Data Sheets</p>
 </div>
 
+<!-- ✅ UPDATED LEGEND -->
 <div class="legend">
-    <span>🔥 Flammable</span>
-    <span>🧯 Gas</span>
-    <span>☣️ Health</span>
-    <span>🌍 Environment</span>
-    <span>⚠️ Oxidizer</span>
-    <span>🧪 Corrosive</span>
+    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/7/73/GHS-pictogram-flamme.svg"> Flammable</span>
+    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/3/3b/GHS-pictogram-gas.svg"> Gas</span>
+    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/9/99/GHS-pictogram-silhouette.svg"> Health</span>
+    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/0/0a/GHS-pictogram-pollu.svg"> Environment</span>
+    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/7/7d/GHS-pictogram-oxid.svg"> Oxidizer</span>
+    <span><img class="ghs-icon" src="https://upload.wikimedia.org/wikipedia/commons/a/a1/GHS-pictogram-acid.svg"> Corrosive</span>
 </div>
 
 <div class="search">
@@ -114,16 +122,16 @@ let dataList = [];
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-// ✅ ICON MAP
+// ✅ ✅ UPDATED ICON MAP (GHS IMAGES)
 const icons = {
-    "flammable": "🔥",
-    "gas": "🧯",
-    "pressure": "🧯",
-    "health": "☣️",
-    "environment": "🌍",
-    "oxidizer": "⚠️",
-    "oxidizing": "⚠️",
-    "corrosive": "🧪"
+    "flammable": "https://upload.wikimedia.org/wikipedia/commons/7/73/GHS-pictogram-flamme.svg",
+    "gas": "https://upload.wikimedia.org/wikipedia/commons/3/3b/GHS-pictogram-gas.svg",
+    "pressure": "https://upload.wikimedia.org/wikipedia/commons/3/3b/GHS-pictogram-gas.svg",
+    "health": "https://upload.wikimedia.org/wikipedia/commons/9/99/GHS-pictogram-silhouette.svg",
+    "environment": "https://upload.wikimedia.org/wikipedia/commons/0/0a/GHS-pictogram-pollu.svg",
+    "oxidizer": "https://upload.wikimedia.org/wikipedia/commons/7/7d/GHS-pictogram-oxid.svg",
+    "oxidizing": "https://upload.wikimedia.org/wikipedia/commons/7/7d/GHS-pictogram-oxid.svg",
+    "corrosive": "https://upload.wikimedia.org/wikipedia/commons/a/a1/GHS-pictogram-acid.svg"
 };
 
 // ✅ COLOR
@@ -161,13 +169,9 @@ fetch(sheetURL)
         dataList.push({ name, url, hazards, row: i });
     }
 
-    // ✅ QR MODE (SHOW ONLY ONE)
     if (id) {
         let item = dataList.find(x => x.row == id);
-
-        if (item) {
-            display([item]);
-        }
+        if (item) display([item]);
     } else {
         display(dataList);
     }
@@ -193,16 +197,7 @@ function display(list) {
 
             Object.keys(icons).forEach(key => {
                 if (text.includes(key)) {
-                    iconHTML += icons[key] + " ";
-                }
-            });
-        });
-
-        let btn = document.createElement("button");
-        btn.innerHTML = `<div class="icon-row">${iconHTML}</div>${item.name}`;
-
-        btn.onclick = () => {
-            if (item.url) window.open(item.url, "_blank");
+                    iconHTML += `<img src="${icons[key]}" class="ghs-icon" title="${text        if (item.url) window.open(item.url, "_blank");
             else alert("MSDS not available");
         };
 
