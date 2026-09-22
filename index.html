@@ -148,6 +148,144 @@ body {
 .legend-item .ghs-pictogram { width: 32px; height: 32px; flex-shrink: 0; }
 .card-icons .ghs-pictogram { width: 40px; height: 40px; }
 
+
+/* ===== INTERACTIVE GHS HAZARD INFORMATION ===== */
+.legend-item {
+    cursor: pointer;
+    border-radius: 9px;
+    padding: 5px 7px;
+    transition: background .18s, transform .18s, box-shadow .18s;
+    user-select: none;
+}
+.legend-item:hover, .legend-item:focus {
+    background: #eef5fc;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(11,78,140,.12);
+    outline: none;
+}
+.legend-item::after {
+    content: "ⓘ";
+    font-size: 10px;
+    color: #1b65a5;
+    margin-left: 1px;
+}
+.card-icons .ghs-pictogram {
+    cursor: pointer;
+    transition: transform .16s, filter .16s;
+}
+.card-icons .ghs-pictogram:hover {
+    transform: scale(1.12);
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,.16));
+}
+
+.ghs-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(5, 20, 38, .62);
+    backdrop-filter: blur(4px);
+}
+.ghs-modal.open { display: flex; }
+
+.ghs-modal-card {
+    width: min(680px, 100%);
+    max-height: 88vh;
+    overflow: auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.30);
+    animation: ghsPop .18s ease-out;
+}
+@keyframes ghsPop {
+    from { opacity:0; transform:translateY(10px) scale(.98); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.ghs-modal-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    background: linear-gradient(135deg,#072f63,#0b66a7);
+    color: #fff;
+}
+.ghs-modal-icon {
+    width: 62px;
+    height: 62px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 10px;
+    padding: 4px;
+    flex: 0 0 auto;
+}
+.ghs-modal-title { flex:1; }
+.ghs-modal-title h3 { font-size: 21px; margin:0 0 4px; }
+.ghs-modal-title p { font-size: 12px; opacity:.86; margin:0; }
+.ghs-close {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,.16);
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+}
+.ghs-modal-body { padding: 20px; }
+.ghs-alert {
+    padding: 11px 13px;
+    margin-bottom: 15px;
+    border-left: 4px solid #d62828;
+    background: #fff3f3;
+    color: #6f1717;
+    border-radius: 7px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+.ghs-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.ghs-info-box {
+    border: 1px solid #dfe7f0;
+    border-radius: 11px;
+    padding: 14px;
+    background: #f9fbfd;
+}
+.ghs-info-box h4 {
+    color: #0b4e8c;
+    font-size: 13px;
+    margin: 0 0 7px;
+}
+.ghs-info-box p {
+    color: #34465d;
+    font-size: 12px;
+    line-height: 1.55;
+    margin: 0;
+}
+.ghs-sds-note {
+    margin-top: 14px;
+    padding: 11px 13px;
+    background: #edf6ff;
+    border-radius: 8px;
+    color: #274765;
+    font-size: 11px;
+    line-height: 1.5;
+}
+@media (max-width:600px) {
+    .ghs-info-grid { grid-template-columns:1fr; }
+    .ghs-modal-head { padding:14px; }
+    .ghs-modal-icon { width:52px; height:52px; }
+    .ghs-modal-title h3 { font-size:18px; }
+}
+
 </style>
 </head>
 <body>
@@ -169,6 +307,31 @@ body {
 </div>
 
 <div class="container" id="list"></div>
+
+
+<!-- GHS INFORMATION POPUP -->
+<div class="ghs-modal" id="ghsModal" role="dialog" aria-modal="true" aria-labelledby="ghsModalName">
+  <div class="ghs-modal-card">
+    <div class="ghs-modal-head">
+      <img id="ghsModalIcon" class="ghs-modal-icon" alt="">
+      <div class="ghs-modal-title">
+        <h3 id="ghsModalName">GHS Hazard</h3>
+        <p id="ghsModalCode">Hazard information</p>
+      </div>
+      <button class="ghs-close" type="button" aria-label="Close" onclick="closeGHSInfo()">×</button>
+    </div>
+    <div class="ghs-modal-body">
+      <div class="ghs-alert" id="ghsWarning"></div>
+      <div class="ghs-info-grid">
+        <div class="ghs-info-box"><h4>⚠ Hazard</h4><p id="ghsHazard"></p></div>
+        <div class="ghs-info-box"><h4>◉ Main Risks</h4><p id="ghsRisk"></p></div>
+        <div class="ghs-info-box"><h4>♻ Possible Impacts</h4><p id="ghsImpact"></p></div>
+        <div class="ghs-info-box"><h4>✓ Safety Controls</h4><p id="ghsSafety"></p></div>
+      </div>
+      <div class="ghs-sds-note"><b>Important:</b> This is general GHS awareness information. Always check the product-specific SDS, label, risk assessment and site requirements before use, storage, handling or emergency response.</div>
+    </div>
+  </div>
+</div>
 
 <script>
 
@@ -386,6 +549,128 @@ function getAccent(h) {
     return "#2a5298";
 }
 
+
+// ─── GHS INTERACTIVE SAFETY INFORMATION ──────────────────────────────────────
+const GHS_INFO = {
+  explosive: {
+    code:"GHS01 • Exploding bomb",
+    warning:"Explosion hazard. Keep away from heat, shock, friction and ignition sources.",
+    hazard:"Explosive or highly reactive material that may explode when heated, shocked, struck, subjected to friction or otherwise improperly handled.",
+    risk:"Blast pressure, flying fragments, fire, serious burns, traumatic injury and possible fatality.",
+    impact:"Can cause major injury, structural damage, secondary fires and widespread disruption to the work area.",
+    safety:"Use only as authorized. Keep away from heat, sparks, flames, impact and friction. Store in the approved location, control access and follow the SDS and emergency procedure."
+  },
+  flammable: {
+    code:"GHS02 • Flame",
+    warning:"Fire hazard. Vapours may ignite quickly and may travel to an ignition source.",
+    hazard:"Flammable gases, aerosols, liquids or solids. Some substances may self-heat, self-react or emit flammable gas.",
+    risk:"Fire, flash fire, vapour ignition, burns and possible explosion in confined or poorly ventilated areas.",
+    impact:"Burn injuries, smoke exposure, equipment/property damage and rapid fire spread.",
+    safety:"Keep away from heat, sparks, hot work and open flames. Provide ventilation, control static discharge, keep containers closed and use suitable fire protection."
+  },
+  oxidizer: {
+    code:"GHS03 • Flame over circle",
+    warning:"May cause or intensify fire. Keep away from combustible and incompatible materials.",
+    hazard:"Oxidizing material that can provide or release oxygen and make other materials burn more intensely.",
+    risk:"Rapid fire development, violent reaction with fuels/organics, burns and possible explosion.",
+    impact:"Accelerated fire spread, severe thermal damage and dangerous reaction with incompatible chemicals.",
+    safety:"Segregate from fuels, oils, organic material and reducing agents. Keep containers clean, closed and correctly stored. Follow SDS compatibility requirements."
+  },
+  gas: {
+    code:"GHS04 • Gas cylinder",
+    warning:"Gas under pressure. Cylinder rupture or uncontrolled release can cause serious injury.",
+    hazard:"Compressed, liquefied, dissolved or refrigerated gas stored under pressure.",
+    risk:"Cylinder projectile, sudden pressure release, asphyxiation, cold burns from refrigerated gas and fire/toxic exposure depending on the gas.",
+    impact:"Serious physical injury, oxygen displacement, frostbite and hazardous atmosphere formation.",
+    safety:"Secure cylinders upright, protect valves, use correct regulators, ventilate the area and keep cylinders away from heat. Move cylinders with an approved trolley."
+  },
+  pressure: {
+    code:"GHS04 • Gas cylinder",
+    warning:"Gas under pressure. Cylinder rupture or uncontrolled release can cause serious injury.",
+    hazard:"Compressed, liquefied, dissolved or refrigerated gas stored under pressure.",
+    risk:"Cylinder projectile, sudden pressure release, asphyxiation, cold burns from refrigerated gas and fire/toxic exposure depending on the gas.",
+    impact:"Serious physical injury, oxygen displacement, frostbite and hazardous atmosphere formation.",
+    safety:"Secure cylinders upright, protect valves, use correct regulators, ventilate the area and keep cylinders away from heat. Move cylinders with an approved trolley."
+  },
+  corrosive: {
+    code:"GHS05 • Corrosion",
+    warning:"Can cause severe skin burns and eye damage. May also corrode metals.",
+    hazard:"Corrosive substance capable of destroying skin/eye tissue and, for some products, attacking metals.",
+    risk:"Chemical burns, permanent eye injury, tissue damage and corrosive damage to containers/equipment.",
+    impact:"Severe injury, possible loss of vision, contaminated surfaces and equipment deterioration.",
+    safety:"Avoid contact. Wear SDS-specified chemical gloves, eye/face protection and protective clothing. Provide suitable eyewash/emergency washing arrangements and use compatible containers."
+  },
+  toxic: {
+    code:"GHS06 • Skull and crossbones",
+    warning:"Acute toxicity. Small exposures may cause severe poisoning or death.",
+    hazard:"Substance capable of causing serious acute toxic effects through swallowing, inhalation or skin exposure.",
+    risk:"Poisoning, respiratory effects, organ effects, unconsciousness and potentially fatal exposure.",
+    impact:"Rapid serious illness or fatality. Contamination may also endanger rescuers if controls are inadequate.",
+    safety:"Prevent inhalation, ingestion and skin contact. Use closed handling/ventilation where required, wear SDS-specified PPE, maintain strict hygiene and follow the SDS emergency/first-aid instructions."
+  },
+  irritant: {
+    code:"GHS07 • Exclamation mark",
+    warning:"May be harmful or irritating. Avoid breathing vapour, mist or dust and avoid contact.",
+    hazard:"May cause skin/eye irritation, skin sensitization, respiratory irritation, harmful acute effects or drowsiness/dizziness depending on the product.",
+    risk:"Dermatitis, eye irritation, coughing, breathing discomfort, allergic skin reaction, headache or dizziness.",
+    impact:"Short-term injury or illness and possible sensitization after repeated exposure.",
+    safety:"Provide ventilation, avoid unnecessary contact, maintain good hygiene and use the gloves, eye protection or respiratory controls specified by the SDS and risk assessment."
+  },
+  health: {
+    code:"GHS08 • Health hazard",
+    warning:"Serious or long-term health hazard. Exposure effects may not be immediately visible.",
+    hazard:"Used for hazards such as carcinogenicity, respiratory sensitization, reproductive toxicity, target-organ toxicity, mutagenicity and aspiration hazard.",
+    risk:"Cancer, asthma or respiratory sensitization, reproductive effects, organ damage, genetic effects or serious aspiration injury depending on the chemical.",
+    impact:"Potential chronic, irreversible or life-threatening health effects after single or repeated exposure.",
+    safety:"Minimize exposure using substitution, enclosure and ventilation first. Follow occupational exposure controls, use specified PPE/respiratory protection, maintain hygiene and follow the product SDS."
+  },
+  environment: {
+    code:"GHS09 • Environment",
+    warning:"Hazardous to the aquatic environment. Prevent release to drains, soil and water.",
+    hazard:"Substance that may be toxic to aquatic organisms and may cause acute or long-lasting environmental effects.",
+    risk:"Contamination of drains, soil, groundwater or surface water and harm to aquatic organisms.",
+    impact:"Fish/aquatic toxicity, ecosystem damage and persistent environmental contamination depending on the product.",
+    safety:"Prevent spills and uncontrolled discharge. Use secondary containment where required, keep away from drains and dispose of waste through the approved route. Follow the SDS spill procedure."
+  }
+};
+
+function openGHSInfo(key) {
+    const p = GHS[key];
+    const info = GHS_INFO[key];
+    if (!p || !info) return;
+
+    const modal = document.getElementById("ghsModal");
+    const icon = document.getElementById("ghsModalIcon");
+    const temp = document.createElement("div");
+    temp.innerHTML = buildGHS(key);
+    const sourceImg = temp.querySelector("img");
+
+    icon.src = sourceImg ? sourceImg.src : "";
+    icon.alt = p.label;
+    document.getElementById("ghsModalName").textContent = p.label;
+    document.getElementById("ghsModalCode").textContent = info.code;
+    document.getElementById("ghsWarning").textContent = info.warning;
+    document.getElementById("ghsHazard").textContent = info.hazard;
+    document.getElementById("ghsRisk").textContent = info.risk;
+    document.getElementById("ghsImpact").textContent = info.impact;
+    document.getElementById("ghsSafety").textContent = info.safety;
+
+    modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+}
+function closeGHSInfo() {
+    document.getElementById("ghsModal").classList.remove("open");
+    document.body.style.overflow = "";
+}
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeGHSInfo();
+});
+document.addEventListener("click", e => {
+    const modal = document.getElementById("ghsModal");
+    if (e.target === modal) closeGHSInfo();
+});
+
+
 // ─── BUILD LEGEND ─────────────────────────────────────────────────────────────
 function buildLegend() {
     const items = [
@@ -396,7 +681,17 @@ function buildLegend() {
     items.forEach(key => {
         const div = document.createElement("div");
         div.className = "legend-item";
+        div.tabIndex = 0;
+        div.setAttribute("role", "button");
+        div.setAttribute("aria-label", `Open ${GHS[key].label} hazard information`);
         div.innerHTML = buildGHS(key) + `<span>${GHS[key].label}</span>`;
+        div.onclick = () => openGHSInfo(key);
+        div.onkeydown = e => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openGHSInfo(key);
+            }
+        };
         leg.appendChild(div);
     });
 }
@@ -456,7 +751,9 @@ function display(list) {
         item.hazards.toLowerCase().split(",").forEach(h => {
             const text = h.trim();
             Object.keys(GHS).forEach(key => {
-                if (text.includes(key)) iconHTML += buildGHS(key);
+                if (text.includes(key)) {
+                    iconHTML += `<span class="ghs-card-icon" data-ghs-key="${key}" title="Click for ${GHS[key].label} safety information">${buildGHS(key)}</span>`;
+                }
             });
         });
 
@@ -469,6 +766,13 @@ function display(list) {
                 <div class="card-icons">${iconHTML}</div>
                 <button class="card-btn">${docSVG} View MSDS</button>
             </div>`;
+
+        card.querySelectorAll(".ghs-card-icon").forEach(icon => {
+            icon.onclick = (e) => {
+                e.stopPropagation();
+                openGHSInfo(icon.dataset.ghsKey);
+            };
+        });
 
         card.querySelector(".card-btn").onclick = () => {
             if (item.url) window.open(item.url, "_blank");
