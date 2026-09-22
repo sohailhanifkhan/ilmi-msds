@@ -286,6 +286,76 @@ body {
     .ghs-modal-title h3 { font-size:18px; }
 }
 
+
+/* ===== ADVANCED GHS POPUP DETAILS ===== */
+.ghs-info-box {
+    position: relative;
+    overflow: hidden;
+}
+.ghs-info-box h4 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+}
+.ghs-info-value {
+    margin-top: 8px;
+    display: grid;
+    gap: 6px;
+}
+.ghs-info-row {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    gap: 8px;
+    align-items: start;
+    font-size: 11.5px;
+    line-height: 1.45;
+}
+.ghs-info-row strong {
+    color: #123f70;
+}
+.ghs-info-row span {
+    color: #34465d;
+}
+.ghs-reference-box {
+    margin-top: 14px;
+    border: 1px solid #cfe0f2;
+    background: #f4f9ff;
+    border-radius: 10px;
+    padding: 13px;
+}
+.ghs-reference-box h4 {
+    margin: 0 0 8px;
+    color: #0b4e8c;
+    font-size: 13px;
+}
+.ghs-reference-box p {
+    margin: 4px 0;
+    color: #3a5068;
+    font-size: 10.8px;
+    line-height: 1.45;
+}
+.ghs-reference-box a {
+    color: #0b5fa5;
+    font-weight: 600;
+    text-decoration: none;
+}
+.ghs-reference-box a:hover { text-decoration: underline; }
+.ghs-ref-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    margin-right: 5px;
+    border-radius: 999px;
+    background: #0b4e8c;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+@media (max-width:600px) {
+    .ghs-info-row { grid-template-columns: 92px 1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -323,12 +393,51 @@ body {
     <div class="ghs-modal-body">
       <div class="ghs-alert" id="ghsWarning"></div>
       <div class="ghs-info-grid">
-        <div class="ghs-info-box"><h4>⚠ Hazard</h4><p id="ghsHazard"></p></div>
-        <div class="ghs-info-box"><h4>◉ Main Risks</h4><p id="ghsRisk"></p></div>
-        <div class="ghs-info-box"><h4>♻ Possible Impacts</h4><p id="ghsImpact"></p></div>
-        <div class="ghs-info-box"><h4>✓ Safety Controls</h4><p id="ghsSafety"></p></div>
+        <div class="ghs-info-box">
+          <h4>⚠ Hazard</h4>
+          <p id="ghsHazard"></p>
+          <div class="ghs-info-value">
+            <div class="ghs-info-row"><strong>Hazard type</strong><span id="ghsHazardType"></span></div>
+            <div class="ghs-info-row"><strong>Typical route</strong><span id="ghsRoute"></span></div>
+          </div>
+        </div>
+
+        <div class="ghs-info-box">
+          <h4>◉ Main Risks</h4>
+          <p id="ghsRisk"></p>
+          <div class="ghs-info-value">
+            <div class="ghs-info-row"><strong>Key concern</strong><span id="ghsConcern"></span></div>
+            <div class="ghs-info-row"><strong>Escalation</strong><span id="ghsEscalation"></span></div>
+          </div>
+        </div>
+
+        <div class="ghs-info-box">
+          <h4>♻ Possible Impacts</h4>
+          <p id="ghsImpact"></p>
+          <div class="ghs-info-value">
+            <div class="ghs-info-row"><strong>People</strong><span id="ghsPeople"></span></div>
+            <div class="ghs-info-row"><strong>Workplace</strong><span id="ghsWorkplace"></span></div>
+          </div>
+        </div>
+
+        <div class="ghs-info-box">
+          <h4>✓ Safety Controls</h4>
+          <p id="ghsSafety"></p>
+          <div class="ghs-info-value">
+            <div class="ghs-info-row"><strong>Priority</strong><span id="ghsPriority"></span></div>
+            <div class="ghs-info-row"><strong>Before use</strong><span id="ghsBeforeUse"></span></div>
+          </div>
+        </div>
       </div>
-      <div class="ghs-sds-note"><b>Important:</b> This is general GHS awareness information. Always check the product-specific SDS, label, risk assessment and site requirements before use, storage, handling or emergency response.</div>
+
+      <div class="ghs-sds-note"><b>Important:</b> This popup is general GHS awareness information, not a product classification. Always use the product-specific SDS and label for the actual signal word, hazard statements, precautionary statements, PPE, storage, first aid and emergency response.</div>
+
+      <div class="ghs-reference-box">
+        <h4>International References</h4>
+        <p><span class="ghs-ref-badge">UN</span><a href="https://unece.org/transport/documents/2025/09/standards/globally-harmonized-system-classification-and-labelling" target="_blank" rel="noopener">UN GHS, 11th Revised Edition (2025)</a> — current UN framework for chemical hazard classification, labels and Safety Data Sheets.</p>
+        <p><span class="ghs-ref-badge">OSHA</span><a href="https://www.osha.gov/hazcom" target="_blank" rel="noopener">OSHA Hazard Communication Standard</a> — GHS-aligned workplace hazard communication, labels, pictograms and 16-section SDS format.</p>
+        <p><span class="ghs-ref-badge">EU</span><a href="https://echa.europa.eu/regulations/clp/clp-pictograms" target="_blank" rel="noopener">ECHA / EU CLP Pictograms</a> — GHS-based pictograms, hazard meaning and precautionary information.</p>
+      </div>
     </div>
   </div>
 </div>
@@ -634,6 +743,9 @@ const GHS_INFO = {
   }
 };
 
+
+const GHS_DETAIL = {"explosive": ["Physical hazard", "Heat, shock, impact or friction", "Explosion / blast", "Can escalate rapidly if heated or confined", "Blast trauma, burns, flying fragments", "Fire, structural and equipment damage", "Eliminate ignition/impact sources", "Verify SDS, segregation, storage and authorized handling"], "flammable": ["Physical / fire hazard", "Heat, spark, flame or hot surface", "Ignition and rapid fire spread", "Vapours can travel and flash back", "Burns, smoke exposure", "Fire/explosion and property damage", "Control ignition and vapours", "Check ventilation, bonding/grounding, storage and PPE"], "oxidizer": ["Physical / fire intensifier", "Contact with fuel or combustible material", "Intensified combustion", "May make a small fire severe", "Burns and reaction injury", "Rapid fire spread and material damage", "Segregate incompatibles", "Check SDS compatibility and keep away from fuels/organics"], "gas": ["Physical / pressure hazard", "Pressure release, heat or valve damage", "Uncontrolled gas release", "Cylinder can become a projectile", "Impact injury, asphyxiation or cold burn", "Hazardous atmosphere / cylinder damage", "Secure and protect cylinders", "Check regulator, valve cap, ventilation and storage"], "pressure": ["Physical / pressure hazard", "Pressure release, heat or valve damage", "Uncontrolled gas release", "Cylinder can become a projectile", "Impact injury, asphyxiation or cold burn", "Hazardous atmosphere / cylinder damage", "Secure and protect cylinders", "Check regulator, valve cap, ventilation and storage"], "corrosive": ["Health / corrosive hazard", "Skin/eye contact; some vapours/mists", "Severe chemical burns", "Damage may be rapid and irreversible", "Skin burns and serious eye injury", "Corrosion of metals/equipment", "Prevent contact and splashes", "Confirm gloves, goggles/face shield, eyewash and compatibility"], "toxic": ["Acute health hazard", "Inhalation, ingestion or skin exposure", "Severe poisoning", "Small exposure may be life-threatening", "Serious illness, organ effects or fatality", "Contamination can endanger others", "Prevent exposure at source", "Check SDS exposure controls, PPE, hygiene and emergency actions"], "irritant": ["Health hazard", "Skin/eye contact or inhalation", "Irritation / harmful effects", "Repeated exposure may worsen effects", "Eye/skin irritation, cough or dizziness", "Reduced fitness for work / contamination", "Ventilate and avoid contact", "Check gloves, eye protection, hygiene and respiratory controls"], "health": ["Serious / chronic health hazard", "Inhalation, ingestion, aspiration or repeated exposure", "Long-term or serious health effects", "Effects may be delayed or irreversible", "Cancer, sensitization, organ/reproductive effects depending on product", "Long-term occupational health exposure", "Minimize exposure by hierarchy of controls", "Review SDS Sections 2, 8 and 11 before work"], "environment": ["Environmental hazard", "Spill, drain discharge or uncontrolled release", "Aquatic/environmental toxicity", "Effects may persist beyond the spill event", "Indirect exposure through contaminated environment", "Soil, drain and water contamination", "Prevent release and contain spills", "Check bunding, drain protection, spill kit and disposal route"]};
+
 function openGHSInfo(key) {
     const p = GHS[key];
     const info = GHS_INFO[key];
@@ -654,6 +766,16 @@ function openGHSInfo(key) {
     document.getElementById("ghsRisk").textContent = info.risk;
     document.getElementById("ghsImpact").textContent = info.impact;
     document.getElementById("ghsSafety").textContent = info.safety;
+
+    const d = GHS_DETAIL[key] || ["—","—","—","—","—","—","—","—"];
+    document.getElementById("ghsHazardType").textContent = d[0];
+    document.getElementById("ghsRoute").textContent = d[1];
+    document.getElementById("ghsConcern").textContent = d[2];
+    document.getElementById("ghsEscalation").textContent = d[3];
+    document.getElementById("ghsPeople").textContent = d[4];
+    document.getElementById("ghsWorkplace").textContent = d[5];
+    document.getElementById("ghsPriority").textContent = d[6];
+    document.getElementById("ghsBeforeUse").textContent = d[7];
 
     modal.classList.add("open");
     document.body.style.overflow = "hidden";
